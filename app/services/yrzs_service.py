@@ -26,7 +26,7 @@ class YRZSService:
                 if profile.get("userVO"):
                     return {"status": "success", "message": f"\nid: {profile['userVO']['uid']}\nname: {profile['login']['name']}\nonlineMode: {profile['login']['onlineMode']}\nemail: {profile['userVO']['email']}\nisAdmin: {profile['userVO']['isAdmin']}\ncreateTime: {profile['userVO']['createTime']}\nupdateTime: {profile['userVO']['updateTime']}"}
                 else:
-                    return {"status": "error", "message": f"\n该用户有数据但是无账号？？？\nname: {profile['login']['name']}\nonlineMode: {profile['login']['onlineMode']}"}
+                    return {"status": "error", "message": f"\n该用户未注册\nname: {profile['login']['name']}\nonlineMode: {profile['login']['onlineMode']}"}
             else:
                 current_app.logger.error(f"请求失败，状态码: {response.status_code}")
                 return {"status": "error", "message": f"请求失败，状态码: {response.status_code}"}
