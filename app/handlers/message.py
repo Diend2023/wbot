@@ -156,11 +156,15 @@ class MessageHandler:
                 player_qq = message_text.split(" ")[1]
                 query_info = self.yrzs_service.query_profile_by_qq(player_qq)
                 self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
-            elif message_text == "#更新查询":
-                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="正在更新查询，这将花费很长时间")
-                # 获取更新查询
-                update_info = self.yrzs_service.update_profile_list()
-                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=update_info.get("message"))
+            elif message_text.startswith("#uid"):
+                player_uid = message_text.split(" ")[1]
+                query_info = self.yrzs_service.query_profile_by_uid(player_uid)
+                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
+            # elif message_text == "#更新查询":
+            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="正在更新查询，这将花费很长时间")
+            #     # 获取更新查询
+            #     update_info = self.yrzs_service.update_profile_list()
+            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=update_info.get("message"))
             else:
                 # 转发消息
                 text = message_text[1:].strip()
