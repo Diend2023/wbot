@@ -118,36 +118,39 @@ class ChatService:
             return "抱歉，DeepSeek遇到了问题"
     
     def _call_gemini(self, message: str, conversation: List[Dict]) -> str:
-        """调用Gemini API（代理模式）"""
+        """调用Gemini API（Google官方格式）"""
         try:
             api_key = current_app.config.get('GEMINI_API_KEY')
             if not api_key:
                 return "Gemini API密钥未配置"
             
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            messages = conversation + [{"role": "user", "content": message}]
+            # ✅ 转换对话格式
+            contents = []
+            for msg in conversation + [{"role": "user", "content": message}]:
+                if msg["role"] == "user":
+                    contents.append({"role": "user", "parts": [{"text": msg["content"]}]})
+                else:
+                    contents.append({"role": "model", "parts": [{"text": msg["content"]}]})
             
             data = {
-                "model": current_app.config.get('GEMINI_MODEL', 'gemini-2.5-flash-preview'),
-                "messages": messages,
-                "max_tokens": 8192,
-                "temperature": 0.7,
-                "stream": False
+                "contents": contents,
+                "generationConfig": {
+                    "maxOutputTokens": 8192,
+                    "temperature": 0.7
+                }
             }
             
-            base_url = current_app.config.get('GEMINI_BASE_URL', 'https://gemini.wanqifan.top')
-            response = requests.post(f"{base_url}/v1/chat/completions", 
-                                headers=headers, json=data, timeout=30)
+            model = current_app.config.get('GEMINI_MODEL', 'gemini-2.0-flash-exp')
+            base_url = f"{current_app.config.get('GEMINI_BASE_URL', 'https://gemini.wanqifan.top')}/v1beta/models/{model}:generateContent?key={api_key}"
+
+            response = requests.post(base_url, headers={"Content-Type": "application/json"},
+                                   json=data, timeout=30)
             
             if response.status_code == 200:
                 result = response.json()
-                return result["choices"][0]["message"]["content"].strip()
+                return result["candidates"][0]["content"]["parts"][0]["text"].strip()
             else:
-                current_app.logger.error(f"Gemini API错误: {response.status_code} - {response.text}")
+                current_app.logger.error(f"Gemini API错误: {response.status_code}")
                 return "Gemini服务暂时不可用"
                 
         except Exception as e:
