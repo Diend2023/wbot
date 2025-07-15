@@ -20,7 +20,6 @@ class YRZSService:
             if response.status_code == 200:
                 data = response.json()
                 profile = data.get("data", {})
-                print(profile)
                 if not profile:
                     return {"status": "error", "message": "未找到用户信息"}
                 if profile.get("userVO"):

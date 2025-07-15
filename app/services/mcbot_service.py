@@ -12,7 +12,9 @@ class McBotService:
         """发送消息"""
         url = f"{self.host}/mcbot/chat"
         message = message.replace('\n', ' ').replace('\r', ' ').strip()
-        name = sender.get("card", sender.get("nickname", "???"))
+        name = sender.get("card", "")
+        if not name:
+            name = sender.get("nickname", "???")
         message = "[群] " + name + " > " + message
         data = {"message": message}
         try:
