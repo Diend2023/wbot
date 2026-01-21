@@ -19,6 +19,7 @@ def create_app():
         from app.services.mcbot_service import McBotService
         from app.services.detlaforce_service import DetlaforceService
         from app.services.yrzs_service import YRZSService
+        from app.services.ar_service import ARService
         from app.handlers.message import MessageHandler
         
         # 创建服务实例并存储到app中
@@ -28,6 +29,7 @@ def create_app():
         app.mcbot_service = McBotService()
         app.detlaforce_service = DetlaforceService()
         app.yrzs_service = YRZSService()
+        app.ar_service = ARService()
         app.message_handler = MessageHandler()
 
     # 注册蓝图

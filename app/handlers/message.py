@@ -23,6 +23,7 @@ class MessageHandler:
         self.mcbot_service = current_app.mcbot_service
         self.detlaforce_service = current_app.detlaforce_service
         self.yrzs_service = current_app.yrzs_service
+        self.ar_service = current_app.ar_service
 
     def handle_message(self, data: Dict[str, Any]) -> None:
         """总处理消息"""
@@ -134,44 +135,51 @@ class MessageHandler:
             if emoji['user_id'] == user_id:
                 self.bot.set_message_emoji_like(message_id, emoji['emoji_id'])
         if message_text.startswith('#') :
-            if message_text == "#在线人数":
-                # 获取在线玩家列表
-                player_list = self.mcbot_service.get_player_list()
-                if player_list:
-                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=player_list)
-                else:
-                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="获取在线玩家列表失败")
-            elif message_text == "#tps":
-                # 获取TPS
-                tps = self.mcbot_service.get_tps()
-                if tps:
-                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=tps)
-                else:
-                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="获取TPS失败")
-            elif message_text.startswith("#id"):
-                player_id = message_text.split(" ")[1]
-                query_info = self.yrzs_service.query_profile_by_name(player_id)
-                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
-            elif message_text.startswith("#qq"):
-                player_qq = message_text.split(" ")[1]
-                query_info = self.yrzs_service.query_profile_by_qq(player_qq)
-                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
-            elif message_text.startswith("#uid"):
-                player_uid = message_text.split(" ")[1]
-                query_info = self.yrzs_service.query_profile_by_uid(player_uid)
-                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
-            # elif message_text == "#更新查询":
-            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="正在更新查询，这将花费很长时间")
-            #     # 获取更新查询
-            #     update_info = self.yrzs_service.update_profile_list()
-            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=update_info.get("message"))
-            else:
-                # 转发消息
-                text = message_text[1:].strip()
-                if text:
-                    result = self.mcbot_service.send_message(sender=sender, message=text)
-                if result:
-                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=result)
+            if message_text.startswith("#查询位置"):
+                player_name = message_text.split(" ")[1] if len(message_text.split(" ")) > 1 else None
+                if not player_name:
+                    self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="请输入玩家名称，例如：#查询位置 玩家名称")
+                    return
+                ar_info = current_app.ar_service.get_location(username=player_name)
+                self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=ar_info)
+            # if message_text == "#在线人数":
+            #     # 获取在线玩家列表
+            #     player_list = self.mcbot_service.get_player_list()
+            #     if player_list:
+            #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=player_list)
+            #     else:
+            #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="获取在线玩家列表失败")
+            # elif message_text == "#tps":
+            #     # 获取TPS
+            #     tps = self.mcbot_service.get_tps()
+            #     if tps:
+            #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=tps)
+            #     else:
+            #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="获取TPS失败")
+            # elif message_text.startswith("#id"):
+            #     player_id = message_text.split(" ")[1]
+            #     query_info = self.yrzs_service.query_profile_by_name(player_id)
+            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
+            # elif message_text.startswith("#qq"):
+            #     player_qq = message_text.split(" ")[1]
+            #     query_info = self.yrzs_service.query_profile_by_qq(player_qq)
+            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
+            # elif message_text.startswith("#uid"):
+            #     player_uid = message_text.split(" ")[1]
+            #     query_info = self.yrzs_service.query_profile_by_uid(player_uid)
+            #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=query_info.get("message"))
+            # # elif message_text == "#更新查询":
+            # #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="正在更新查询，这将花费很长时间")
+            # #     # 获取更新查询
+            # #     update_info = self.yrzs_service.update_profile_list()
+            # #     self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=update_info.get("message"))
+            # else:
+            #     # 转发消息
+            #     text = message_text[1:].strip()
+            #     if text:
+            #         result = self.mcbot_service.send_message(sender=sender, message=text)
+            #     if result:
+            #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=result)
 
     def _handle_talk_message(self, message: str, group_id: str) -> None:
         """处理聊天消息"""

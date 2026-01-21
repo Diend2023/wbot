@@ -58,4 +58,4 @@ class Config:
     DEEPSEEK_MODEL = os.environ.get('DEEPSEEK_MODEL', 'deepseek-chat')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
     GEMINI_BASE_URL = os.environ.get('GEMINI_BASE_URL', 'https://gemini.wanqifan.top')
-    GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash-preview')
+    GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
