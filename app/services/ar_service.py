@@ -44,15 +44,16 @@ class ARService:
         online_data = self.get_location_online(username)
 
         result = f"玩家 {username}\n"
+
         result += f"UUID: {offline_data.get('uuid') if isinstance(offline_data, dict) and offline_data.get('uuid') else (online_data.get('uuid') if isinstance(online_data, dict) and online_data.get('uuid') else '未找到')}"
 
-        if isinstance(offline_data, dict) or offline_data.get('offline_location_link') or offline_data.get('offline_location'):
+        if isinstance(offline_data, dict):
             result += f"\n\n离线位置链接: {offline_data.get('offline_location_link')}\n"
             result += f"离线位置: {offline_data.get('offline_location')}"
         else:
             result += f"\n\n获取离线位置失败: {offline_data}\n"
 
-        if isinstance(online_data, dict) or online_data.get('online_location_link') or online_data.get('online_location'):
+        if isinstance(online_data, dict):
             result += f"\n\n在线位置链接: {online_data.get('online_location_link')}\n"
             result += f"在线位置: {online_data.get('online_location')}"
         else:
