@@ -236,3 +236,17 @@ class NapCatBot:
         except Exception as e:
             self.logger.error(f"设置消息表情点赞失败: {e}")
             return {"status": "error", "message": str(e)}
+        
+    def get_group_info(self, group_id: str) -> Dict[str, Any]:
+        """获取群信息"""
+        url = f"{self.host}/get_group_info"
+        params = {
+            "group_id": group_id
+        }
+        try:
+            response = requests.get(
+                url, params=params, headers=self.headers)
+            return response.json()
+        except Exception as e:
+            self.logger.error(f"获取群信息失败: {e}")
+            return {"status": "error", "message": str(e)}

@@ -16,6 +16,7 @@ class MessageHandler:
             modes=current_app.config.get('MODES', None)
         )
         self.send_emoji_list = current_app.config.get('SEND_EMOJI_LIST', [])
+        self.group_link_list = current_app.config.get('GROUP_LINK_LIST', [])
         self.command_handler = CommandHandler(self.bot)
         self.chat_service = current_app.chat_service
         self.ping_service = current_app.ping_service
@@ -77,9 +78,9 @@ class MessageHandler:
     def _handle_group_at_message(self, message_body: Dict[str, Any], user_id: str,
                               group_id: str, sender: Dict[str, Any], message_id: str) -> None:
         """处理群聊@消息"""
-        for emoji in self.send_emoji_list:
-            if emoji['user_id'] == user_id:
-                self.bot.set_message_emoji_like(message_id, emoji['emoji_id'])
+        # for emoji in self.send_emoji_list:
+        #     if emoji['user_id'] == user_id:
+        #         self.bot.set_message_emoji_like(message_id, emoji['emoji_id'])
         message_text = self._get_message_text(message_body).strip()
         if message_text.startswith('test'):
             self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text="测试")
@@ -180,6 +181,17 @@ class MessageHandler:
             #         result = self.mcbot_service.send_message(sender=sender, message=text)
             #     if result:
             #         self.bot.send_group_message_text(group_id=group_id, user_id=user_id, text=result)
+        elif message_text.startswith(">") and user_id != self.bot.qq:
+            # 转发群聊连接消息
+            for link_group in self.group_link_list:
+                if link_group['group_id'] == group_id:
+                    for target_group_id in link_group['link_list']:
+                        if target_group_id != group_id:
+                            group_name = self.bot.get_group_info(group_id).get("data", {}).get("group_name", group_id)
+                            forward_text = f"{group_name} {sender.get('card') or sender.get('nickname') or '未知'}({user_id}) > {message_text[1:].strip()}"
+                            self.bot.send_group_message_text(group_id=target_group_id, user_id=None, text=forward_text)
+                    break
+
 
     def _handle_talk_message(self, message: str, group_id: str) -> None:
         """处理聊天消息"""

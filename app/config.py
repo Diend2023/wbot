@@ -49,6 +49,8 @@ class Config:
 
     SEND_EMOJI_LIST = json.loads(os.environ.get('SEND_EMOJI_LIST', '[]'))
 
+    GROUP_LINK_LIST = json.loads(os.environ.get('GROUP_LINK_LIST', '[]'))
+
     # AI设置
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
     OPENAI_BASE_URL = os.environ.get('OPENAI_BASE_URL', 'https://api.qqslyx.com/v1')
