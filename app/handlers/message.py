@@ -189,7 +189,12 @@ class MessageHandler:
                         if target_group_id != group_id:
                             group_name = self.bot.get_group_info(group_id).get("data", {}).get("group_name", group_id)
                             forward_text = f"{group_name} {sender.get('card') or sender.get('nickname') or '未知'}({user_id}) > {message_text[1:].strip()}"
-                            self.bot.send_group_message_text(group_id=target_group_id, user_id=None, text=forward_text)
+                            forward_message = message_body
+                            for body in forward_message:
+                                if body.get('type') == 'text':
+                                    body['data']['text'] = forward_text
+                                    break
+                            self.bot.send_group_message(group_id=target_group_id, message=forward_message)
                     break
 
 

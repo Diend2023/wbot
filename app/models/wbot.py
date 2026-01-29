@@ -25,6 +25,21 @@ class NapCatBot:
         if self.token:
             self.headers['Authorization'] = f'Bearer {self.token}'
 
+    def send_group_message(self, group_id: str, message: list) -> Dict[str, Any]:
+        """发送群聊消息，message为消息内容列表"""
+        url = f"{self.host}/send_group_msg"
+        data = {
+            "group_id": group_id,
+            "message": message,
+        }
+        try:
+            response = requests.post(
+                url, json=data, headers=self.headers, timeout=10)
+            return response.json()
+        except Exception as e:
+            self.logger.error(f"发送群消息失败: {e}")
+            return {"status": "error", "message": str(e)}
+
     def send_group_message_text(self, group_id: str, user_id: str, text: str) -> Dict[str, Any]:
         """发送群聊文本消息"""
         url = f"{self.host}/send_group_msg"
